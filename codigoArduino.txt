@@ -1,0 +1,120 @@
+
+#include <Servo.h>
+#include <LiquidCrystal.h>
+#define rs 12
+#define en 11
+#define d4 5
+#define d5 4
+#define d6 3
+#define d7 2
+
+Servo servoMotor1;
+Servo servoMotor2;
+Servo servoMotor3;
+const int botonHoras = 7;
+const int botonMinutos = 8;
+const int botonSegundos = 13;
+int horas=0;
+int minutos=0;
+int segundos=0;
+int servoSegundos=0;
+int servoMinutos=0;
+int servoHoras=0;
+bool estadoBotonSegundosAnterior = LOW;
+bool estadoBotonSegundos;
+bool estadoBotonMinutosAnterior = LOW;
+bool estadoBotonMinutos;
+bool estadoBotonHorasAnterior = LOW;
+bool estadoBotonHoras;
+unsigned long milisSegundosAnterior = 0;
+
+bool estado = HIGH;
+
+
+
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+void setup() {
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  pinMode(botonHoras, INPUT);
+  pinMode(botonMinutos, INPUT);
+  pinMode(botonSegundos, INPUT);
+  servoMotor1.attach(10);
+  servoMotor2.attach(9);
+  servoMotor3.attach(6);
+  
+  
+
+}
+ 
+void loop() {
+  
+  estadoBotonSegundos = digitalRead(botonSegundos);
+  estadoBotonMinutos = digitalRead(botonMinutos);
+  estadoBotonHoras = digitalRead(botonHoras);
+  lcd.setCursor(4,0);
+  lcd.print("horario");
+  lcd.setCursor(4,1);
+  if(horas<10)
+  lcd.print("0");
+  lcd.print(horas);
+  lcd.print(":");  
+  if(minutos<10)
+  lcd.print("0");
+  lcd.print(minutos);
+  lcd.print(":");
+
+  
+  if(segundos<10)  
+  lcd.print("0");
+  
+  lcd.print(segundos);
+  
+  unsigned long milisSegundosActual = millis();
+  if(milisSegundosActual-milisSegundosAnterior>=1000){
+  	segundos+=1;
+    milisSegundosAnterior = milisSegundosActual;
+  }
+  
+  if(segundos>59){
+  	segundos=0;
+    minutos+=1;
+  }
+  
+  if(minutos>59){
+  	segundos=0;
+    minutos=0;
+    horas+=1;
+  }
+     
+  if(horas>23){
+  	horas=0;
+    minutos=0;
+    segundos=0;
+  }
+     
+  if(estadoBotonSegundos != estadoBotonSegundosAnterior && estadoBotonSegundos == HIGH){
+  	segundos++;
+  }
+  estadoBotonSegundosAnterior = estadoBotonSegundos;
+  
+  if(estadoBotonMinutos != estadoBotonMinutosAnterior && estadoBotonMinutos == HIGH){
+  	minutos++;
+  }
+  estadoBotonMinutosAnterior = estadoBotonMinutos;
+  
+  if(estadoBotonHoras != estadoBotonHorasAnterior && estadoBotonHoras == HIGH){
+  	horas++;
+  }
+  estadoBotonHorasAnterior = estadoBotonHoras;
+  
+  servoSegundos=map(segundos,0,59,0,180);
+  servoMinutos=map(minutos,0,59,0,180);
+  servoHoras=map(horas,0,23,0,180);
+  servoMotor1.write(servoHoras);
+  servoMotor2.write(servoMinutos);
+  servoMotor3.write(servoSegundos);
+  
+  
+
+}
