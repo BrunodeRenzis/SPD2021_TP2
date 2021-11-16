@@ -31,37 +31,76 @@ unsigned long milisSegundosAnterior = 0;
 bool estado = HIGH;
 
 
-
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 void setup() {
   Serial.begin(9600);
   lcd.begin(16,2);
-  pinMode(botonHoras, INPUT);
-  pinMode(botonMinutos, INPUT);
-  pinMode(botonSegundos, INPUT);
-  servoMotor1.attach(10);
-  servoMotor2.attach(9);
-  servoMotor3.attach(6);
-  
-  
-
+  setearBotones();
+  setearServos();
 }
  
 void loop() {
   
+  asignarBotones();
+  armarReloj();
+  logicaBotonesReloj();
+  mapearServos();
+  dibujarServos();
+}
+
+void setearBotones(){
+  pinMode(botonHoras, INPUT);
+  pinMode(botonMinutos, INPUT);
+  pinMode(botonSegundos, INPUT);
+}
+
+void setearServos(){
+  servoMotor1.attach(10);
+  servoMotor2.attach(9);
+  servoMotor3.attach(6);
+}
+
+void mapearServos(){
+  servoSegundos=map(segundos,0,59,0,180);
+  servoMinutos=map(minutos,0,59,0,180);
+  servoHoras=map(horas,0,23,0,180);
+}
+
+void dibujarServos(){
+  servoMotor1.write(servoHoras);
+  servoMotor2.write(servoMinutos);
+  servoMotor3.write(servoSegundos);
+}
+
+
+  
+
+void asignarBotones(){
   estadoBotonSegundos = digitalRead(botonSegundos);
   estadoBotonMinutos = digitalRead(botonMinutos);
   estadoBotonHoras = digitalRead(botonHoras);
+}
+
+void setearTitulo(){
   lcd.setCursor(4,0);
   lcd.print("horario");
-  lcd.setCursor(4,1);
+}
+
+void setearHoras(){
+  
   if(horas<10)
   lcd.print("0");
   lcd.print(horas);
+}
+
+void setearMinutos(){
   lcd.print(":");  
   if(minutos<10)
   lcd.print("0");
   lcd.print(minutos);
+}
+
+void setearSegundos(){
   lcd.print(":");
 
   
@@ -69,9 +108,19 @@ void loop() {
   lcd.print("0");
   
   lcd.print(segundos);
-  
+}
+
+void armarReloj(){
+ setearTitulo();
+ lcd.setCursor(4,1);
+ setearHoras();
+ setearMinutos();
+ setearSegundos();
+}
+
+void logicaBotonesReloj(){
   unsigned long milisSegundosActual = millis();
-  if(milisSegundosActual-milisSegundosAnterior>=1000){
+  if(milisSegundosActual-milisSegundosAnterior>=500){
   	segundos+=1;
     milisSegundosAnterior = milisSegundosActual;
   }
@@ -107,14 +156,6 @@ void loop() {
   	horas++;
   }
   estadoBotonHorasAnterior = estadoBotonHoras;
-  
-  servoSegundos=map(segundos,0,59,0,180);
-  servoMinutos=map(minutos,0,59,0,180);
-  servoHoras=map(horas,0,23,0,180);
-  servoMotor1.write(servoHoras);
-  servoMotor2.write(servoMinutos);
-  servoMotor3.write(servoSegundos);
-  
-  
-
 }
+
+
