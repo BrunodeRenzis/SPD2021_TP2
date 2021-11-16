@@ -46,6 +46,7 @@ void loop() {
   logicaBotonesReloj();
   mapearServos();
   dibujarServos();
+  delay(25);
 }
 
 void setearBotones(){
@@ -83,7 +84,7 @@ void asignarBotones(){
 
 void setearTitulo(){
   lcd.setCursor(4,0);
-  lcd.print("horario");
+  lcd.print("Horario");
 }
 
 void setearHoras(){
@@ -120,7 +121,7 @@ void armarReloj(){
 
 void logicaBotonesReloj(){
   unsigned long milisSegundosActual = millis();
-  if(milisSegundosActual-milisSegundosAnterior>=500){
+  if(milisSegundosActual-milisSegundosAnterior>=1000){
   	segundos+=1;
     milisSegundosAnterior = milisSegundosActual;
   }
