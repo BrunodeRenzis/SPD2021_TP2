@@ -1,4 +1,8 @@
+////////////////////////////////////////LINK AL REPOSITORIO////////////////////////////////////////////
+////////////////////////////////////////https://www.tinkercad.com/things/2zJ9t7hosvQ///////////////////
 
+
+////////////////DEFINICION DE VARIABLES Y CONSTANTES//////////////////
 #include <Servo.h>
 #include <LiquidCrystal.h>
 #define rs 12
@@ -27,11 +31,21 @@ bool estadoBotonMinutos;
 bool estadoBotonHorasAnterior = LOW;
 bool estadoBotonHoras;
 unsigned long milisSegundosAnterior = 0;
-
-bool estado = HIGH;
-
-
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+/////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////PROGRAMA////////////////////////
 void setup() {
   Serial.begin(9600);
   lcd.begin(16,2);
@@ -43,30 +57,62 @@ void loop() {
   
   asignarBotones();
   armarReloj();
-  logicaBotonesReloj();
+  logicaReloj();
   mapearServos();
   dibujarServos();
   delay(25);
 }
+/////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////MÉTODOS///////////////////////////////////
+//Se setean los botones como inputs
 void setearBotones(){
   pinMode(botonHoras, INPUT);
   pinMode(botonMinutos, INPUT);
   pinMode(botonSegundos, INPUT);
 }
 
+//Se setean los pines de cada servo en la placa arduino.
 void setearServos(){
   servoMotor1.attach(10);
   servoMotor2.attach(9);
   servoMotor3.attach(6);
 }
 
+//Se mapean los valores entre los que varia cada servo
 void mapearServos(){
   servoSegundos=map(segundos,0,59,0,180);
   servoMinutos=map(minutos,0,59,0,180);
   servoHoras=map(horas,0,23,0,180);
 }
 
+//Se asigna la lógica de movimiento de cada servo.
 void dibujarServos(){
   servoMotor1.write(servoHoras);
   servoMotor2.write(servoMinutos);
@@ -75,18 +121,20 @@ void dibujarServos(){
 
 
   
-
+//Asigna la lectura de las entradas en los botones.
 void asignarBotones(){
   estadoBotonSegundos = digitalRead(botonSegundos);
   estadoBotonMinutos = digitalRead(botonMinutos);
   estadoBotonHoras = digitalRead(botonHoras);
 }
 
+//Se escribe titulos en el reloj
 void setearTitulo(){
   lcd.setCursor(4,0);
   lcd.print("Horario");
 }
 
+//Se escriben horas en el reloj
 void setearHoras(){
   
   if(horas<10)
@@ -94,6 +142,7 @@ void setearHoras(){
   lcd.print(horas);
 }
 
+//Se escriben minutos en el reloj
 void setearMinutos(){
   lcd.print(":");  
   if(minutos<10)
@@ -101,6 +150,7 @@ void setearMinutos(){
   lcd.print(minutos);
 }
 
+//Se escriben segundos en el reloj
 void setearSegundos(){
   lcd.print(":");
 
@@ -111,6 +161,7 @@ void setearSegundos(){
   lcd.print(segundos);
 }
 
+//Asigna componentes del reloj.
 void armarReloj(){
  setearTitulo();
  lcd.setCursor(4,1);
@@ -119,7 +170,8 @@ void armarReloj(){
  setearSegundos();
 }
 
-void logicaBotonesReloj(){
+//Asigna lógica a los componentes del reloj
+void logicaReloj(){
   unsigned long milisSegundosActual = millis();
   if(milisSegundosActual-milisSegundosAnterior>=1000){
   	segundos+=1;
